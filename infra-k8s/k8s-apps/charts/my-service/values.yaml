@@ -67,3 +67,41 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+envSecrets:
+  - name: BACKEND_ORIGINS
+    secretName: argocd-credentials
+    secretKey: BACKEND_ORIGINS
+  - name: FASTAPI_PROJECT_NAME
+    secretName: argocd-credentials
+    secretKey: FASTAPI_PROJECT_NAME
+  - name: LOG_LEVEL
+    secretName: argocd-credentials
+    secretKey: LOG_LEVEL
+  - name: ENVIRONMENT
+    secretName: argocd-credentials
+    secretKey: ENVIRONMENT
+  - name: ARGOCD_SERVER
+    secretName: argocd-credentials
+    secretKey: ARGOCD_SERVER
+  - name: ARGOCD_PORT
+    secretName: argocd-credentials
+    secretKey: ARGOCD_PORT
+  - name: ARGOCD_URL
+    secretName: argocd-credentials
+    secretKey: ARGOCD_URL
+  - name: ARGOCD_PASSWORD
+    secretName: argocd-credentials
+    secretKey: ARGOCD_PASSWORD
+  - name: ARGOCD_USERNAME
+    secretName: argocd-credentials
+    secretKey: ARGOCD_USERNAME
+  - name: TOKEN_CACHE_TTL
+    secretName: argocd-credentials
+    secretKey: TOKEN_CACHE_TTL
+  - name: IGNORE_SERVER_ERROR
+    secretName: argocd-credentials
+    secretKey: IGNORE_SERVER_ERROR
+  - name: ALLOW_INSECURE
+    secretName: argocd-credentials
+    secretKey: ALLOW_INSECURE

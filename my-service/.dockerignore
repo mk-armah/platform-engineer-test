@@ -6,3 +6,4 @@
 **/.mypy_cache
 **/.coverage
 **/.pytest_cache
+**/secret.yaml
