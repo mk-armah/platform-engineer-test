@@ -1,232 +1,186 @@
-# **Platform Engineer Exam**
-
-## **Introduction**
-
-Welcome to the  **Platform Engineer Exam** . The purpose of this test is to assess your  **hands-on skills in Kubernetes, ArgoCD, GitOps, FastAPI development, and CI/CD workflows** .
-
-### **Exam Overview**
-
-This exam consists of the following key components:
-
-1. **Environment Setup**
-   * Set up a local Kubernetes cluster using K3D.
-   * Install essential tools required for the exam.
-   * Configure a local container registry for pushing images.
-2. **ArgoCD Installation & GitOps Setup**
-   * Install ArgoCD as a CD system for your local Kubernetes cluster.
-   * Deploy an **Nginx application** using **GitOps principles** via ArgoCD.
-3. **Code Assignment**
-   * Complete a **FastAPI-based microservice** that interacts with ArgoCD.
-   * Implement two API routes to fetch **ArgoCD application statuses** and  **ArgoCD project metadata** .
-4. **Dockerization & Deployment**
-   * Build and **push a Docker image** of your service to the  **local registry** .
-   * Deploy the service to Kubernetes as an  **ArgoCD application** .
-
-### **Submission Guidelines**
-
-* Your **final solution must be uploaded to a GitHub repository** under your own account.
-* The structure of your repository should match the paths provided in each task.
-* All required components ( **Kubernetes manifests, application code, configuration files, Dockerfiles** ) should be included in your repository.
-* Use best practices for  **Git commits, repository organization, and Kubernetes deployments** .
-
-> 🚀 **Note:** Before starting the tasks, ensure you have installed all required tools listed in the pre-requisites section below.
+Below is a sample README.md that documents your project. You can adjust details as needed for your final submission.
 
 ---
 
-## **Pre-requisites**
+# GitOps & FastAPI Project
 
-To complete this exam, you must have the following tools installed on your system:
+This project demonstrates a complete GitOps workflow using Kubernetes, Helm, ArgoCD, and a FastAPI microservice. The objectives are to showcase hands-on skills with Kubernetes deployments (via K3D), GitOps with ArgoCD, FastAPI development, and CI/CD best practices.
 
-* **GitHub account** (for hosting your solution)
-* **[K3D](https://k3d.io/stable/)** (to set up a local Kubernetes cluster)
-* **[Poetry](https://python-poetry.org/docs/)** (for Python dependency management)
-* **[Kubectl](https://kubernetes.io/docs/reference/kubectl/)** (to interact with the Kubernetes cluster)
+## Table of Contents
 
-Ensure that each of these tools is installed and correctly configured before proceeding.
+- [Overview](#overview)
+- [Prerequisites](#prerequisites)
+- [Project Structure](#project-structure)
+- [Environment Setup](#environment-setup)
+- [Deployments](#deployments)
+  - [ArgoCD Installation](#argocd-installation)
+  - [Deploying Nginx via GitOps](#deploying-nginx-via-gitops)
+  - [FastAPI Service (my-service)](#fastapi-service-my-service)
+- [Docker & Helm](#docker--helm)
+- [Testing](#testing)
+- [Troubleshooting](#troubleshooting)
+- [License](#license)
 
----
+## Overview
 
-## **Environment Setup**
+This project consists of two main components:
 
-### **GitHub Setup**
+1. **Nginx Application:**  
+   Deployed via Helm and managed by ArgoCD, serving as a simple web server accessible via `nginx.local`.
 
-1. Unzip the exam folder:
-   ```bash
-   unzip platform-engineer-test.zip
-   ```
-2. Create a dedicated **Git repository** under your GitHub account and push the contents of the extracted folder.
+2. **FastAPI Microservice (my-service):**  
+   A FastAPI-based microservice that:
+   - Provides health-check and API endpoints.
+   - Interacts with the ArgoCD API to list application statuses and projects.
+   - Is containerized using Docker and deployed with Helm, managed by ArgoCD, and exposed via `my-service.local`.
 
-### **Local Kubernetes Cluster Setup**
+The GitOps approach is implemented by storing all Kubernetes manifests, Helm charts, and configuration files in a GitHub repository. ArgoCD continuously syncs the desired state from Git with the live cluster.
 
-1. Install your local Kubernetes cluster using  **K3D** :
+## Prerequisites
 
+Before you begin, ensure you have the following installed and configured on your system:
+
+- **GitHub Account** (for hosting the repository)
+- **K3D** (for setting up a local Kubernetes cluster)
+- **Poetry** (for Python dependency management)
+- **Kubectl** (for interacting with Kubernetes)
+- **Docker** (for building container images)
+- **Helm** (for managing Kubernetes applications)
+- **ArgoCD** (for continuous deployment via GitOps)
+
+## Project Structure
+
+```plaintext
+platfrom-engineer-test/
+├── infra-k8s/
+│   ├── k8s-apps/
+│   │   ├── nginx/                  # Helm chart for Nginx
+│   │   ├── my-service/             # Helm chart for FastAPI service
+│   └── argo-apps/
+│       ├── nginx-argo-app.yaml     # ArgoCD application manifest for Nginx
+│       └── my-service-argo-app.yaml# ArgoCD application manifest for my-service
+├── my-service/                     # FastAPI service code
+│   ├── my_service/
+│   │   ├── api/
+│   │   │   └── v1/
+│   │   │       └── routers/
+│   │   │           └── argocd_querier_router.py
+│   │   ├── clients/
+│   │   │   └── argocd_client.py
+│   │   ├── config/
+│   │   │   └── config.py
+│   │   ├── models/
+│   │   │   └── models.py
+│   │   ├── utils/
+│   │   │   └── logger.py
+│   │   ├── main.py                # Application entry point
+│   ├── tests/                     # Unit and integration tests
+│   │   ├── test_routes.py
+│   │   └── test_argocd_client.py
+│   └── pyproject.toml             # Poetry & pytest configuration
+└── README.md                      # Project documentation (this file)
+```
+
+## Environment Setup
+
+### Local Kubernetes Cluster
+
+1. Create your local Kubernetes cluster with K3D using the provided configuration file:
    ```bash
    k3d cluster create -c k3d-config.yaml --registry-config k3d-registries.yaml
    ```
-2. Wait for all cluster components to be ready:
-
+2. Wait for all components to be ready:
    ```bash
    kubectl get pods --all-namespaces --watch
    ```
 
-   Your environment is considered **ready** once you see output similar to:
+### Local Container Registry
 
-   ```json
-   kube-system   coredns-7b98449c4-z64bm                   1/1     Running     0          15m
-   kube-system   helm-install-traefik-bt6wp                0/1     Completed   2          15m
-   kube-system   helm-install-traefik-crd-82nw6            0/1     Completed   0          15m
-   kube-system   local-path-provisioner-595dcfc56f-6lmpf   1/1     Running     0          15m
-   kube-system   metrics-server-cdcc87586-hc9zp            1/1     Running     0          15m
-   kube-system   svclb-traefik-97509331-htwzd              2/2     Running     0          15m
-   kube-system   svclb-traefik-97509331-l6bps              2/2     Running     0          15m
-   kube-system   svclb-traefik-97509331-m4ltx              2/2     Running     0          15m
-   kube-system   svclb-traefik-97509331-p7vmm              2/2     Running     0          15m
-   kube-system   traefik-d7c9c5778-xzz4c                   1/1     Running     0          15m
-   ^C%  
-   ```
-
-### **Local Registry Setup**
-
-1. Add the following entry to `/etc/hosts`:
-
-   ```json
+1. Update your `/etc/hosts` file to include:
+   ```plaintext
    127.0.0.1 my-registry.local
    ```
-2. Verify that the local Docker registry is running:
-
-   ```
+2. Verify your registry is running:
+   ```bash
    docker ps | grep registry
    ```
 
-   Expected output:
+## Deployments
 
-   ```json
-   69b0319f571f   registry:2   "/entrypoint.sh /etc…"   Up 15 minutes   0.0.0.0:59462->5000/tcp   my-registry
+### ArgoCD Installation
+
+1. Install ArgoCD in the `argocd` namespace:
+   ```bash
+   kubectl create namespace argocd
+   kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
    ```
+2. Access the ArgoCD UI by port-forwarding the server:
+   ```bash
+   kubectl port-forward svc/argocd-server -n argocd 8080:443
+   ```
+3. Log in using default credentials (admin / initial password from the `argocd-server` pod).
 
----
+### Deploying Nginx via GitOps
 
-## **Exam Tasks**
+1. The Helm chart for Nginx is located in `infra-k8s/k8s-apps/nginx`.
+2. The corresponding ArgoCD application manifest (`nginx-argo-app.yaml`) points to this chart in your Git repository.
+3. ArgoCD will automatically deploy Nginx and expose it at `nginx.local` via Traefik.
 
-1. **Install ArgoCD** in your local cluster in the `argocd` namespace.
-2. **Deploy Nginx as an ArgoCD-managed application** in a GitOps manner.
-   * Store the **Nginx manifests** in your Git repository.
-   * Store the **ArgoCD application manifest** in Git.
-3. **Develop a FastAPI service** that interacts with ArgoCD.
-   * Implement two **API endpoints** to list **ArgoCD applications** and  **ArgoCD projects** .
-4. **Build and push a Docker image** of the FastAPI service to the  **local registry** .
-5. **Deploy the FastAPI service** as an  **ArgoCD application** .
+### FastAPI Service (my-service)
 
----
+1. The FastAPI service code is located in `my-service/my_service`.
+2. The Helm chart for my-service is in `infra-k8s/k8s-apps/my-service` and configures:
+   - The container to run on port 9000.
+   - Health checks on `/healthcheck`.
+   - An Ingress that routes traffic from `my-service.local` to the service.
+3. The corresponding ArgoCD manifest (`my-service-argo-app.yaml`) ensures the service is deployed via GitOps.
+4. The service interacts with ArgoCD’s API using the custom `ArgocdClient`.
 
-## **Tasks Breakdown**
+## Docker & Helm
 
-### **1️⃣ ArgoCD Installation**
-
-**Task Definition:**
-Install and configure ArgoCD as your Kubernetes CD system.
-
-**Instructions:**
-
-* Install **[ArgoCD](https://argo-cd.readthedocs.io/en/stable/)** in your local cluster under the `argocd` namespace.
-* Use **Kustomize or Helm** to manage your Kubernetes manifests.
-* Connect ArgoCD to your  **GitHub repository** .
-
-**Notes:**
-
-* Ensure your solution is stored under:
+- **Docker:**  
+  Build and push your FastAPI image to your local registry:
   ```bash
-  platform-engineer-test/infra-k8s/k8s-apps
+  docker build -t my-registry:5000/my-service:latest .
+  docker push my-registry:5000/my-service:latest
   ```
+- **Helm:**  
+  Use Helm to template and deploy your applications. Example command for my-service:
+  ```bash
+  helm upgrade --install my-service-release infra-k8s/k8s-apps/my-service --namespace default
+  ```
+  ArgoCD will monitor the Git repository for changes and sync the cluster accordingly.
 
----
+## Testing
 
-### **2️⃣ Deploy Nginx as an ArgoCD Application**
+### Running Tests Locally
 
-**Task Definition:**
-Deploy Nginx using **GitOps principles** via ArgoCD.
-
-**Instructions:**
-
-* Create **Kubernetes manifests** for Nginx:
-  * **Deployment**
-  * **Service**
-  * **Traefik Ingress**
-* Create an **ArgoCD application** that deploys Nginx from Git.
-* Expose it at  **`nginx.local`** .
-
----
-
-### **3️⃣ Code Assignment (FastAPI Service)**
-
-**Task Definition:**
-Complete `my-service` by adding **two FastAPI routes** to interact with ArgoCD.
-
-**Instructions:**
-
-* Implement the following API routes:
-  * GET `/api/v1/argocd/application_status  `
-    Expected response:
-
-    ```json
-    curl http://127.0.0.1:8080/api/v1/argocd/application_status | jq .
-
-
-    {
-      "applications": [
-        {
-          "application_name": "my-service",
-          "status": "Synced"
-        },
-        {
-          "application_name": "nginx",
-          "status": "Synced"
-        }
-      ]
-    }
-    ```
-  * **GET `/api/v1/argocd/list_projects`**
-
-    ```bash
-    curl http://127.0.0.1:8080/api/v1/argocd/list_projects | jq .
-    ```
-
-    Expected output:
-
-    ```json
-    {
-      "projects": [
-        {
-          "project_name": "default",
-          "namespace": "argocd"
-        }
-      ]
-    }
-    ```
-
----
-
-### **4️⃣ Build and Push Docker Image for `my-service`**
-
-**Instructions:**
-
+Use Poetry to run your tests with coverage:
 ```bash
-docker build . -t <YOUR_TAG_VERASION>
-docker tag <YOUR_TAG_VERASION> my-registry.local:<LOCAL_REGISTRY_PORT>/<YOUR_TAG_VERASION>
-docker push my-registry.local:<LOCAL_REGISTRY_PORT>/<YOUR_TAG_VERASION>
+make test
 ```
+This command runs:
+```bash
+poetry run pytest --cov=my_service tests/
+```
+The test suite includes:
+- **Route tests:** Verifying the FastAPI endpoints.
+- **ArgocdClient tests:** Using pytest-asyncio and aioresponses to simulate API calls.
 
----
+### Test Coverage
 
-### **5️⃣ Deploy `my-service` as an ArgoCD Application**
+Current test coverage is approximately 90% across the project. Test files are located under `my-service/tests`.
 
-**Instructions:**
+## Troubleshooting
 
-* Create **Kubernetes manifests** for `my-service` (deployment, service, ingress)
-* Create an  **ArgoCD application** .
-* Expose it at  **`my-service.local`** .
-* Run curl command
-
----
-
- **GOOD LUCK!** 🚀
+- **Ingress Not Routing:**  
+  Ensure your `/etc/hosts` file maps `nginx.local` and `my-service.local` to the IP addresses of your ingress controller (or use a load balancer IP).
+- **Pod Issues:**  
+  Check pod logs using:
+  ```bash
+  kubectl logs <pod-name> -n default
+  ```
+- **Image Pull Errors:**  
+  Verify that your Docker image is correctly pushed to your registry and the image reference in your Helm chart uses the correct registry URL and port.
+- **ArgoCD Sync Issues:**  
+  Confirm that ArgoCD shows your applications as Synced and Healthy.
