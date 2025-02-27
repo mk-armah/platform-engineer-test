@@ -1,7 +1,8 @@
 replicaCount: 1
 image:
+  repository: my-registry.local:59462/my-service
+  tag: latest
   pullPolicy: IfNotPresent
-  tag: "latest"
 
 imagePullSecrets: []
 nameOverride: ""

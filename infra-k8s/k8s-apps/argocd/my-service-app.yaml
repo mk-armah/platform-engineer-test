@@ -6,14 +6,14 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "https://github.com/mk-armah/platform-engineer-test.git"
+    repoURL: 'https://github.com/mk-armah/platform-engineer-test.git'
+    path: 'infra-k8s/k8s-apps/charts/my-service'
     targetRevision: dev
-    path: "infra-k8s/k8s-apps/charts/my-service"
     helm:
       valueFiles:
         - values.yaml
   destination:
-    server: "https://kubernetes.default.svc"
+    server: 'https://kubernetes.default.svc'
     namespace: default
   syncPolicy:
     automated:
