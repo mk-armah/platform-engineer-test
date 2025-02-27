@@ -1,11 +1,13 @@
-from fastapi import FastAPI, Depends
-from fastapi.responses import JSONResponse
-from my_service.dependencies import get_token
-from my_service.utils.logger import setup_logger
-from my_service.clients.argocd_client import ArgocdClient
-from fastapi import APIRouter
-from models.models import ListApplicationResponse, ListProjectResponse, ObjectKind
+from fastapi import APIRouter, Depends, FastAPI
 
+from my_service.clients.argocd_client import ArgocdClient
+from my_service.dependencies import get_token
+from my_service.models.models import (
+    ListApplicationResponse,
+    ListProjectResponse,
+    ObjectKind,
+)
+from my_service.utils.logger import setup_logger
 
 router = APIRouter(
     prefix="/argocd",

@@ -1,6 +1,6 @@
-from pydantic import BaseModel
 from enum import StrEnum
-from typing import Dict, List, Any
+from typing import Any, Dict, List
+
 from pydantic import BaseModel, root_validator
 
 

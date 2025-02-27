@@ -1,8 +1,9 @@
 from typing import Any, Optional
+
 import aiohttp
 
-from my_service.utils.logger import setup_logger
 from my_service.config.config import settings
+from my_service.utils.logger import setup_logger
 
 logger = setup_logger()
 
@@ -20,7 +21,7 @@ class ArgocdClient:
         self.ignore_server_error = ignore_server_error or settings.IGNORE_SERVER_ERROR
         self.allow_insecure = allow_insecure or settings.ALLOW_INSECURE
         self.api_auth_header = {"Authorization": f"Bearer {self.token}"}
-        self.session: Optional[aiohttp.ClientSession] = None
+        self.session: Optional[aiohttp.ClientSession]
 
         if self.allow_insecure:
             # Warning: Disabling SSL verification is not recommended for production
@@ -48,14 +49,17 @@ class ArgocdClient:
     ) -> dict[str, Any]:
         logger.info(f"Sending request to ArgoCD API: {method} {url}")
         try:
-            async with self.session.request(
-                method=method,
-                url=url,
-                params=query_params,
-                json=json_data,
-            ) as response:
-                response.raise_for_status()
-                return await response.json()
+            if self.session:
+                async with self.session.request(
+                    method=method,
+                    url=url,
+                    params=query_params,
+                    json=json_data,
+                ) as response:
+                    response.raise_for_status()
+                    return await response.json()
+            else:
+                raise Exception("Client session is not initialized")
 
         except aiohttp.ClientResponseError as e:
             logger.error(f"HTTP error: status {e.status} with message: {e.message}")

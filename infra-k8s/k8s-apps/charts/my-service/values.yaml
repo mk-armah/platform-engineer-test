@@ -1,0 +1,18 @@
+replicaCount: 1
+
+image:
+  repository: my-registry.local:64621/my-service
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  hosts:
+    - host: my-service.local
+      paths: ["/"]
+  tls: []  # Configure TLS if needed
+

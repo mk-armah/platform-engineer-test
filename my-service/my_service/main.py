@@ -1,11 +1,11 @@
 import uvicorn as uvicorn
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
+
+from my_service.api.v1 import api
 from my_service.config.config import settings
 from my_service.models.models import HealthCheckResponse
 from my_service.utils.logger import setup_logger
-from my_service.api.v1 import api
-
 
 logger = setup_logger()
 logger.debug(f"Running with config: {settings}")

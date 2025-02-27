@@ -1,18 +1,19 @@
+import time
+
+import aiohttp
+import jwt
+from cachetools import TTLCache
+
 from my_service.config.config import settings
 from my_service.models.models import ArgoCDCreds
-import aiohttp
-from cachetools import TTLCache
 from my_service.utils.logger import setup_logger
-import time
-import jwt
-
 
 creds = ArgoCDCreds(
     username=settings.ARGOCD_USERNAME, password=settings.ARGOCD_PASSWORD
 )
 
 logger = setup_logger()
-token_cache = TTLCache(maxsize=1, ttl=settings.TOKEN_CACHE_TTL)
+token_cache: TTLCache = TTLCache(maxsize=1, ttl=settings.TOKEN_CACHE_TTL)
 
 
 async def fetch_argocd_token():
@@ -32,7 +33,7 @@ async def fetch_argocd_token():
             token = data.get("token")
             if token:
                 logger.debug(
-                    f"ArgoCD session token has been successfully, setting up cache TTL"
+                    "ArgoCD session token has been successfully, setting up cache TTL"
                 )
                 try:
                     decoded = jwt.decode(token, options={"verify_signature": False})
