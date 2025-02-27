@@ -63,3 +63,6 @@ async def list_projects(token: str = Depends(get_token)):
         projects = await client.get_resources(ObjectKind.PROJECTS)
 
         return ListProjectResponse(projects=projects)
+
+
+#kubectl apply -f infra-k8s/k8-apps/argocd/my-service-app.yaml
