@@ -1,7 +1,3 @@
-Below is a sample README.md that documents your project. You can adjust details as needed for your final submission.
-
----
-
 # GitOps & FastAPI Project
 
 This project demonstrates a complete GitOps workflow using Kubernetes, Helm, ArgoCD, and a FastAPI microservice. The objectives are to showcase hands-on skills with Kubernetes deployments (via K3D), GitOps with ArgoCD, FastAPI development, and CI/CD best practices.
