@@ -9,10 +9,10 @@ nameOverride: ""
 fullnameOverride: ""
 
 serviceAccount:
-  create: true
+  create: false
   automount: true
   annotations: {}
-  name: ""
+  name: default
 
 podAnnotations: {}
 podLabels: {}
