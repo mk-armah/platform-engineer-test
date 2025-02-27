@@ -22,7 +22,24 @@ cachetools = "^5.5.1"
 black = "^25.1.0"
 ruff = "^0.9.7"
 mypy = "^1.15.0"
+pytest = "^8.3.4"
+httpx = "0.23.0"
+pytest-cov = "^6.0.0"
+aioresponses = "^0.7.8"
+pytest-asyncio = "^0.25.3"
+types-cachetools = "^5.5.0.20240820"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_default_fixture_loop_scope = "function"
+markers = [
+    "asyncio: mark test functions as asyncio tests.",
+]
+filterwarnings = [
+    "ignore:.*'cgi' is deprecated.*:DeprecationWarning",
+    "ignore::DeprecationWarning:httpx/_models.py",
+    "ignore:verify_ssl is deprecated:DeprecationWarning",
+]

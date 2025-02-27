@@ -44,4 +44,8 @@ lint:
 	@poetry run mypy .
 
 run:
-	@poetry run uvicorn my_service.main:app --host 0.0.0.0 --port $(SERVICE_PORT)
+	@poetry run uvicorn my_service.main:app --host 0.0.0.0 --port $(SERVICE_PORT) $(if $(filter dev,$(ENVIRONMENT)),--reload)
+
+
+test:
+	@poetry run pytest --cov=my_service tests/

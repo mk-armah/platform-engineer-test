@@ -36,7 +36,7 @@ async def healthcheck() -> HealthCheckResponse:
 
 
 if __name__ == "__main__":
-    if settings.ENVIRONMENT == "development":
+    if settings.ENVIRONMENT in "development":
         uvicorn.run("my_service.main:app", port=9000, reload=True)
     else:
         uvicorn.run("my_service.main:app", port=9000)

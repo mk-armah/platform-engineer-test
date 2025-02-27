@@ -5,3 +5,5 @@
 **/.ruff_cache
 **/*.tgz
 **/.mypy_cache
+**/.coverage
+**/.pytest_cache

@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     BACKEND_ORIGINS: List[AnyHttpUrl] = []
     FASTAPI_PROJECT_NAME: str = "my-service"
     LOG_LEVEL: str = "DEBUG"
-    ENVIRONMENT: str = "development"
+    ENVIRONMENT: str = "dev"
 
     # ArgoCD Config defaults
     ARGOCD_SERVER: str = "localhost"

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, FastAPI
+from fastapi import APIRouter, Depends
 
 from my_service.clients.argocd_client import ArgocdClient
 from my_service.dependencies import get_token
@@ -18,9 +18,6 @@ router = APIRouter(
 logger = setup_logger()
 
 
-app = FastAPI()
-
-
 @router.get("/application_status")
 async def application_status(token: str = Depends(get_token)):
     """Fetches all ArgoCD applications statuses
@@ -31,10 +28,6 @@ async def application_status(token: str = Depends(get_token)):
     Returns:
         applications_data_conscise: concise application metadata json strucure
     """
-    ##############################################################################
-    # Please complete the fastapi route to get applications metadata from argocd #
-    # Make sure to use argocd token for authentication                           #
-    ##############################################################################
     async with ArgocdClient(
         token=token,
     ) as client:
@@ -52,17 +45,9 @@ async def list_projects(token: str = Depends(get_token)):
         projects_data_conscise: concise argocd projects metadata json strucure
     """
 
-    ##########################################################################
-    # Please complete the fastapi route to get projects metadata from argocd #
-    # Make sure to use argocd token for authentication                       #
-    ##########################################################################
-
     async with ArgocdClient(
         token=token,
     ) as client:
         projects = await client.get_resources(ObjectKind.PROJECTS)
 
         return ListProjectResponse(projects=projects)
-
-
-#kubectl apply -f infra-k8s/k8-apps/argocd/my-service-app.yaml

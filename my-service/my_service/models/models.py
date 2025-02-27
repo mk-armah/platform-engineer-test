@@ -1,7 +1,7 @@
 from enum import StrEnum
 from typing import Any, Dict, List
 
-from pydantic import BaseModel, root_validator
+from pydantic import BaseModel, model_validator
 
 
 class HealthCheckResponse(BaseModel):
@@ -23,7 +23,7 @@ class ApplicationResponse(BaseModel):
     application_name: str
     status: str
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def extract_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         name = values.get("metadata", {}).get("name")
         sync_status = values.get("status", {}).get("sync", {}).get("status")
@@ -38,7 +38,7 @@ class ProjectResponse(BaseModel):
     project_name: str
     namespace: str
 
-    @root_validator(pre=True)
+    @model_validator(mode="before")
     def extract_fields(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         metadata = values.get("metadata", {})
         name = metadata.get("name", "")
