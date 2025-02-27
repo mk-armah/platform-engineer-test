@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     repoURL: "https://github.com/mk-armah/platform-engineer-test.git"
-    targetRevision: HEAD
+    targetRevision: dev
     path: "infra-k8s/k8s-apps/charts/my-service"
     helm:
       valueFiles:
